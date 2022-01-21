@@ -1,9 +1,24 @@
 import React, { useContext, useState } from "react";
 import { FormContext } from "../../FormContext";
+import validator from "validator";
 
 const Input = ({ name, label, value }) => {
     const { handleChange } = useContext(FormContext);
     const [inputValue, setInputValue] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const validateEmail = (e) => {
+        var email = e.target.value;
+
+        if (validator.isEmail(email)) {
+            setEmailError("Valid Email :)");
+        } else {
+            setEmailError("Enter valid Email!");
+        }
+
+        if (email.length === 0) {
+            setEmailError("");
+        }
+    };
 
     function formatPhoneNumber(value) {
         // if input value is falsy eg if the user deletes the input, then just return
@@ -38,9 +53,14 @@ const Input = ({ name, label, value }) => {
         setInputValue(formattedPhoneNumber);
     };
 
-    function callTwoFunctions(name, e) {
+    function phoneFunction(name, e) {
         handleChange(name, e);
         handleInput(e);
+    }
+
+    function emailFunction(name, e) {
+        handleChange(name, e);
+        validateEmail(e);
     }
 
     return (
@@ -48,11 +68,20 @@ const Input = ({ name, label, value }) => {
             <label htmlFor={name} className="form-label">
                 {label}
             </label>
-            {name === "phone_number" ? (
-                <input type="text" className="form-control" id={name} value={inputValue} onChange={(event) => callTwoFunctions(name, event)} placeholder="(xxx) xxx-xxxx" />
-            ) : (
-                <input type="text" className="form-control" id={name} value={value} onChange={(event) => handleChange(name, event)} />
-            )}
+            {(name === "phone_number" && <input type="text" className="form-control" id={name} value={inputValue} onChange={(event) => phoneFunction(name, event)} placeholder="(xxx) xxx-xxxx" />) ||
+                (name === "email" && (
+                    <div>
+                        <input type="text" className="form-control" id={name} value={value} placeholder="your@email.com" onChange={(event) => emailFunction(name, event)} />{" "}
+                        <span
+                            style={{
+                                fontWeight: "bold",
+                                color: "red",
+                            }}
+                        >
+                            {emailError}
+                        </span>
+                    </div>
+                )) || <input type="text" className="form-control" id={name} value={value} onChange={(event) => handleChange(name, event)} />}
         </div>
     );
 };
