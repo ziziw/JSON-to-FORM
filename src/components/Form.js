@@ -20,7 +20,7 @@ const postData = async (form) => {
     });
 
     //save to local storage
-    localStorage.setItem("questions", res);
+    localStorage.setItem("questions", form);
 };
 
 const Form = () => {
